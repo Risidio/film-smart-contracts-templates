@@ -6,7 +6,9 @@ module.exports = {
   solidity: "0.8.28",
   networks: {
     hedera: {
-      url: process.env.HEDERA_ENDPOINT || "https://testnet.hashio.io/api",
+      url:
+        process.env.HEDERA_ENDPOINT ||
+        "https://hedera.testnet.mirrornode.hedera.com/api/v1",
       accounts: [process.env.HEDERA_PRIVATE_KEY],
       chainId: 296,
     },
