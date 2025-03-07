@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract AssetLicenseNFT is ERC721, Ownable, ReentrancyGuard {
+contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
     struct License {
         address creator;
         uint48 validUntil;
@@ -45,7 +45,7 @@ contract AssetLicenseNFT is ERC721, Ownable, ReentrancyGuard {
     event FeeUpdated(uint256 newFee);
     event FeesToggled(bool enabled);
 
-    constructor(uint256 initialFee) ERC721("AssetLicense", "ALNS") Ownable(msg.sender) {
+    constructor(uint256 initialFee) ERC721("FilmLicense", "ALNS") Ownable(msg.sender) {
         baseLicenseFee = initialFee;
         feesEnabled = true;
     }
