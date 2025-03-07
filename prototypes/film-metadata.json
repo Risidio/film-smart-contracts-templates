@@ -1,0 +1,52 @@
+{
+    "filmId": "FILM123456",
+    "title": "The Decentralized Revolution",
+    "description": "A sci-fi thriller about blockchain reshaping the world.",
+    "producer": "0xProducerWalletAddress",
+    "investmentDetails": {
+        "totalRaised": "500000 USDT",
+        "investors": [
+            {
+                "investorId": "INV001",
+                "wallet": "0xInvestorWallet1",
+                "amount": "10000 USDT",
+                "ownershipPercentage": "2%"
+            },
+            {
+                "investorId": "INV002",
+                "wallet": "0xInvestorWallet2",
+                "amount": "5000 USDT",
+                "ownershipPercentage": "1%"
+            }
+        ]
+    },
+    "revenueDistribution": {
+        "totalRevenue": "0 USDT",
+        "distributionSchedule": "Monthly",
+        "lastDistributionDate": "N/A",
+        "nextDistributionDate": "2025-03-01",
+        "shares": [
+            {
+                "investorId": "INV001",
+                "wallet": "0xInvestorWallet1",
+                "sharePercentage": "2%",
+                "totalEarned": "0 USDT"
+            },
+            {
+                "investorId": "INV002",
+                "wallet": "0xInvestorWallet2",
+                "sharePercentage": "1%",
+                "totalEarned": "0 USDT"
+            }
+        ]
+    },
+    "contractDetails": {
+        "filmContractAddress": "0xFilmContractAddress",
+        "deployedOn": "Hedera",
+        "usdtContract": "0xUSDTContractAddress"
+    },
+    "proofOfOwnership": {
+        "ipfsHash": "Qm123...abc",
+        "timestamp": "2025-02-20T12:00:00Z"
+    }
+}

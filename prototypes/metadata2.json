@@ -1,0 +1,18 @@
+{
+    "filmTitle": "The Future of Film",
+    "director": "Jane Doe",
+    "producer": "John Smith",
+    "fundingGoal": "500000 USDT",
+    "totalInvestment": "320000 USDT",
+    "investorCount": 1250,
+    "metadataURI": "ipfs://Qm12345abcde",
+    "revenueDistribution": {
+        "totalRevenue": "1200000 USDT",
+        "distributed": "600000 USDT",
+        "remaining": "600000 USDT"
+    },
+    "proofOfOwnership": {
+        "tokenId": "0xABC123",
+        "owner": "0xDEADBEEF"
+    }
+}

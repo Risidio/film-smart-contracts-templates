@@ -1,0 +1,39 @@
+{
+    "filmId": "unique_film_identifier",
+    "title": "Film Title",
+    "director": "Director Name",
+    "producers": [
+        {
+            "name": "Producer Name",
+            "walletAddress": "0xProducerWallet"
+        }
+    ],
+    "writers": [
+        {
+            "name": "Writer Name",
+            "walletAddress": "0xWriterWallet"
+        }
+    ],
+    "ipfsHash": "Qm12345abcde",
+    "s3Url": "https://s3-bucket/film.json",
+    "investmentDetails": {
+        "totalInvestment": "100000 USDT",
+        "investors": [
+            {
+                "investorAddress": "0xInvestor1",
+                "amountInvested": "50000 USDT",
+                "ownershipPercentage": 50
+            },
+            {
+                "investorAddress": "0xInvestor2",
+                "amountInvested": "50000 USDT",
+                "ownershipPercentage": 50
+            }
+        ]
+    },
+    "revenueDetails": {
+        "totalRevenue": "0 USDT",
+        "distributedRevenue": "0 USDT",
+        "nextDistributionTimestamp": "2025-01-01T00:00:00Z"
+    }
+}
