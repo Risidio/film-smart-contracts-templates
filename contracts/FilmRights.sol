@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
-    struct License {
+contract FilmRights is ERC721, Ownable, ReentrancyGuard {
+    struct Rights {
         address creator;
         uint48 validUntil;
         string assetURI;        // URI to the asset (IPFS or other storage)
@@ -20,8 +20,8 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
         uint256[] tokenIds;     // Array of token IDs owned by this creator
     }
 
-    // License data by token ID
-    mapping(uint256 => License) public licenses;
+    // Rights data by token ID
+    mapping(uint256 => Rights) public licenses;
     
     // Creator data by address
     mapping(address => Creator) public creators;
@@ -29,24 +29,24 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
     // Asset URI to token ID mapping (to prevent duplicates)
     mapping(string => uint256) private _assetToToken;
     
-    // License fee configuration
-    uint256 public baseLicenseFee;
+    // Rights fee configuration
+    uint256 public baseRightsFee;
     bool public feesEnabled;
     
     uint256 private _nextTokenId = 1;
     
-    event LicenseIssued(uint256 indexed tokenId, address indexed creator, string assetURI);
-    event LicenseRenewed(uint256 indexed tokenId, uint48 newValidUntil);
-    event LicenseDeactivated(uint256 indexed tokenId);
-    event LicenseReactivated(uint256 indexed tokenId);
+    event RightsIssued(uint256 indexed tokenId, address indexed creator, string assetURI);
+    event RightsRenewed(uint256 indexed tokenId, uint48 newValidUntil);
+    event RightsDeactivated(uint256 indexed tokenId);
+    event RightsReactivated(uint256 indexed tokenId);
     event CreatorRegistered(address indexed creator);
     event CreatorRevoked(address indexed creator);
     event AssetUploaded(uint256 indexed tokenId, address indexed creator, string assetURI);
     event FeeUpdated(uint256 newFee);
     event FeesToggled(bool enabled);
 
-    constructor(uint256 initialFee) ERC721("FilmLicense", "ALNS") Ownable(msg.sender) {
-        baseLicenseFee = initialFee;
+    constructor(uint256 initialFee) ERC721("FilmRights", "ALNS") Ownable(msg.sender) {
+        baseRightsFee = initialFee;
         feesEnabled = true;
     }
 
@@ -70,15 +70,15 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
         require(!creators[msg.sender].isRegistered, "Already registered");
         
         if (feesEnabled) {
-            require(msg.value >= baseLicenseFee, "Insufficient registration fee");
+            require(msg.value >= baseRightsFee, "Insufficient registration fee");
         }
         
         creators[msg.sender].isRegistered = true;
         emit CreatorRegistered(msg.sender);
         
         // Return excess funds if any
-        if (msg.value > baseLicenseFee) {
-            payable(msg.sender).transfer(msg.value - baseLicenseFee);
+        if (msg.value > baseRightsFee) {
+            payable(msg.sender).transfer(msg.value - baseRightsFee);
         }
     }
 
@@ -99,14 +99,14 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
         
         // Check if fees need to be paid
         if (feesEnabled) {
-            require(msg.value >= baseLicenseFee, "Insufficient license fee");
+            require(msg.value >= baseRightsFee, "Insufficient license fee");
         }
         
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
         
         // Store license information
-        licenses[tokenId] = License({
+        licenses[tokenId] = Rights({
             creator: msg.sender,
             validUntil: uint48(block.timestamp) + validityPeriod,
             assetURI: assetURI,
@@ -122,18 +122,18 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
         _assetToToken[assetURI] = tokenId;
         
         emit AssetUploaded(tokenId, msg.sender, assetURI);
-        emit LicenseIssued(tokenId, msg.sender, assetURI);
+        emit RightsIssued(tokenId, msg.sender, assetURI);
         
         // Return excess funds if any
-        if (msg.value > baseLicenseFee) {
-            payable(msg.sender).transfer(msg.value - baseLicenseFee);
+        if (msg.value > baseRightsFee) {
+            payable(msg.sender).transfer(msg.value - baseRightsFee);
         }
         
         return tokenId;
     }
 
     // Admin can issue license for a creator (for edge cases)
-    function issueLicense(
+    function issueRights(
         address creator, 
         string calldata assetURI,
         string calldata assetMetadata,
@@ -150,7 +150,7 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
         uint256 tokenId = _nextTokenId++;
         _safeMint(creator, tokenId);
         
-        licenses[tokenId] = License({
+        licenses[tokenId] = Rights({
             creator: creator,
             validUntil: uint48(block.timestamp) + validityPeriod,
             assetURI: assetURI,
@@ -163,44 +163,44 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
         _assetToToken[assetURI] = tokenId;
         
         emit AssetUploaded(tokenId, creator, assetURI);
-        emit LicenseIssued(tokenId, creator, assetURI);
+        emit RightsIssued(tokenId, creator, assetURI);
         
         return tokenId;
     }
 
     // License management functions
-    function renewLicense(uint256 tokenId, uint48 additionalTime) external payable {
+    function renewRights(uint256 tokenId, uint48 additionalTime) external payable {
         require(_isAuthorized(msg.sender, tokenId), "Not owner or approved");
-        require(licenses[tokenId].isActive, "License is not active");
+        require(licenses[tokenId].isActive, "Film Rights is not active");
         
         if (feesEnabled) {
-            require(msg.value >= baseLicenseFee, "Insufficient renewal fee");
+            require(msg.value >= baseRightsFee, "Insufficient renewal fee");
         }
         
         // Update expiration date
         licenses[tokenId].validUntil += additionalTime;
         
-        emit LicenseRenewed(tokenId, licenses[tokenId].validUntil);
+        emit RightsRenewed(tokenId, licenses[tokenId].validUntil);
         
         // Return excess funds if any
-        if (msg.value > baseLicenseFee) {
-            payable(msg.sender).transfer(msg.value - baseLicenseFee);
+        if (msg.value > baseRightsFee) {
+            payable(msg.sender).transfer(msg.value - baseRightsFee);
         }
     }
     
-    function deactivateLicense(uint256 tokenId) external {
+    function deactivateRights(uint256 tokenId) external {
         require(_isAuthorized(msg.sender, tokenId) || msg.sender == owner(), "Not authorized");
-        require(licenses[tokenId].isActive, "License already inactive");
+        require(licenses[tokenId].isActive, "Film Rights already inactive");
         
         licenses[tokenId].isActive = false;
-        emit LicenseDeactivated(tokenId);
+        emit RightsDeactivated(tokenId);
     }
     
-    function reactivateLicense(uint256 tokenId) external onlyOwner {
-        require(!licenses[tokenId].isActive, "License already active");
+    function reactivateRights(uint256 tokenId) external onlyOwner {
+        require(!licenses[tokenId].isActive, "Film Rights already active");
         
         licenses[tokenId].isActive = true;
-        emit LicenseReactivated(tokenId);
+        emit RightsReactivated(tokenId);
     }
 
     // Helper function to check if sender is authorized for token
@@ -212,7 +212,7 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
     }
 
     // View functions
-    function isLicenseValid(uint256 tokenId) public view returns (bool) {
+    function isRightsValid(uint256 tokenId) public view returns (bool) {
         return _ownerOf(tokenId) != address(0) && 
                block.timestamp <= licenses[tokenId].validUntil && 
                licenses[tokenId].isActive;
@@ -235,8 +235,8 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
     }
 
     // Fee management
-    function setBaseLicenseFee(uint256 newFee) external onlyOwner {
-        baseLicenseFee = newFee;
+    function setbaseRightsFee(uint256 newFee) external onlyOwner {
+        baseRightsFee = newFee;
         emit FeeUpdated(newFee);
     }
     
@@ -253,12 +253,12 @@ contract FilmLicensing is ERC721, Ownable, ReentrancyGuard {
 
     // Override transfer functions to check license validity
     function transferFrom(address from, address to, uint256 tokenId) public override {
-        require(isLicenseValid(tokenId), "Cannot transfer invalid license");
+        require(isRightsValid(tokenId), "Cannot transfer invalid license");
         super.transferFrom(from, to, tokenId);
     }
 
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
-        require(isLicenseValid(tokenId), "Cannot transfer invalid license");
+        require(isRightsValid(tokenId), "Cannot transfer invalid license");
         super.safeTransferFrom(from, to, tokenId, data);
     }
 }
