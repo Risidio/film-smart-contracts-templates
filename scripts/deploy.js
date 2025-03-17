@@ -1,19 +1,66 @@
-const hre = require("hardhat");
+const { ethers, network } = require("hardhat");
+const fs = require("fs");
+const path = require("path");
 
 async function main() {
-  const [deployer] = await hre.ethers.getSigners();
+  try {
+    const [deployer] = await ethers.getSigners();
 
-  console.log("Deploying contract with account:", deployer.address);
+    console.log("Deploying to Hedera network:", network.name);
+    console.log("Deploying contract with account:", deployer.address);
 
-  const FilmRights = await hre.ethers.getContractFactory("FilmRights");
-  const filmRights = await FilmRights.deploy();
+    const initialFee = ethers.parseEther("0.01"); // Example: 0.01 HBAR equivalent
+    const FilmRights = await ethers.getContractFactory("FilmRights");
 
-  await filmRights.waitForDeployment();
+    // Deploy contract
+    console.log("Deploying FilmRights contract...");
+    const filmRights = await FilmRights.deploy(initialFee);
 
-  console.log("FilmRights Smart Contract deployed to:", filmRights.address);
+    console.log("Waiting for deployment transaction confirmation...");
+    await filmRights.waitForDeployment();
+
+    const contractAddress = await filmRights.getAddress();
+    console.log("FilmRights Smart Contract deployed to:", contractAddress);
+    console.log("Initial fee set to:", ethers.formatEther(initialFee));
+
+    // Save deployment details
+    const deploymentData = {
+      network: network.name,
+      address: contractAddress,
+      deployer: deployer.address,
+      timestamp: new Date().toISOString(),
+      initialFee: ethers.formatEther(initialFee),
+    };
+
+    const deploymentsDir = path.join(__dirname, "../deployments");
+    if (!fs.existsSync(deploymentsDir)) {
+      fs.mkdirSync(deploymentsDir);
+    }
+
+    fs.writeFileSync(
+      path.join(deploymentsDir, `${network.name}.json`),
+      JSON.stringify(deploymentData, null, 2)
+    );
+
+    console.log("Deployment information saved to deployments directory");
+    console.log("You can view your contract on the Hedera Hashscan at:");
+    console.log(`https://hashscan.io/testnet/contract/${contractAddress}`);
+
+    return filmRights;
+  } catch (error) {
+    console.error("Deployment failed:", error);
+    process.exit(1);
+  }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+async function runMain() {
+  try {
+    await main();
+    process.exit(0);
+  } catch (error) {
+    console.error("Unhandled error:", error);
+    process.exit(1);
+  }
+}
+
+runMain();
