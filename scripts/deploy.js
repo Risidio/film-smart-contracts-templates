@@ -8,7 +8,6 @@ async function main() {
 
     console.log("Deploying to Hedera network:", network.name);
     console.log("Deploying contract with account:", deployer.address);
-
     const FilmLicensing = await ethers.getContractFactory("FilmLicensing");
 
     // Deploy contract
@@ -21,12 +20,12 @@ async function main() {
     const contractAddress = await filmLicensing.getAddress();
     console.log("FilmLicensing Smart Contract deployed to:", contractAddress);
 
+
     // Save deployment details
     const deploymentData = {
       network: network.name,
       address: contractAddress,
       deployer: deployer.address,
-      timestamp: new Date().toISOString(),
     };
 
     const deploymentsDir = path.join(__dirname, "../deployments");
@@ -42,7 +41,6 @@ async function main() {
     console.log("Deployment information saved to deployments directory");
     console.log("You can view your contract on the Hedera Hashscan at:");
     console.log(`https://hashscan.io/testnet/contract/${contractAddress}`);
-
     return filmLicensing;
   } catch (error) {
     console.error("Deployment failed:", error);

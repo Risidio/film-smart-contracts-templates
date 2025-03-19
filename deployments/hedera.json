@@ -1,5 +1,6 @@
 {
   "network": "hedera",
+
   "address": "0xD73F325dECF89c1D8195045b9cF3da12c55BfDf7",
   "deployer": "0x052A008C2675e6266c352A17ca5a4aB7adCA9F76",
   "timestamp": "2025-03-18T13:43:43.646Z"
