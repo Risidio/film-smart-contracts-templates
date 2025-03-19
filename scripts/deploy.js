@@ -8,28 +8,24 @@ async function main() {
 
     console.log("Deploying to Hedera network:", network.name);
     console.log("Deploying contract with account:", deployer.address);
-
-    const initialFee = ethers.parseEther("0.01"); // Example: 0.01 HBAR equivalent
-    const FilmRights = await ethers.getContractFactory("FilmRights");
+    const FilmLicensing = await ethers.getContractFactory("FilmLicensing");
 
     // Deploy contract
-    console.log("Deploying FilmRights contract...");
-    const filmRights = await FilmRights.deploy(initialFee);
+    console.log("Deploying FilmLicensing contract...");
+    const filmLicensing = await FilmLicensing.deploy();
 
     console.log("Waiting for deployment transaction confirmation...");
-    await filmRights.waitForDeployment();
+    await filmLicensing.waitForDeployment();
 
-    const contractAddress = await filmRights.getAddress();
-    console.log("FilmRights Smart Contract deployed to:", contractAddress);
-    console.log("Initial fee set to:", ethers.formatEther(initialFee));
+    const contractAddress = await filmLicensing.getAddress();
+    console.log("FilmLicensing Smart Contract deployed to:", contractAddress);
+
 
     // Save deployment details
     const deploymentData = {
       network: network.name,
       address: contractAddress,
       deployer: deployer.address,
-      timestamp: new Date().toISOString(),
-      initialFee: ethers.formatEther(initialFee),
     };
 
     const deploymentsDir = path.join(__dirname, "../deployments");
@@ -45,8 +41,7 @@ async function main() {
     console.log("Deployment information saved to deployments directory");
     console.log("You can view your contract on the Hedera Hashscan at:");
     console.log(`https://hashscan.io/testnet/contract/${contractAddress}`);
-
-    return filmRights;
+    return filmLicensing;
   } catch (error) {
     console.error("Deployment failed:", error);
     process.exit(1);
