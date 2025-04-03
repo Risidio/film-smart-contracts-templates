@@ -7,7 +7,10 @@ const path = require("path");
 const PINATA_JWT = process.env.PINATA_JWT;
 
 async function uploadFileToIPFS() {
-  const filePath = path.join(__dirname, "../assets/shuacap_studio_logo_v2.png");
+  const filePath = path.join(
+    __dirname,
+    process.argv[2] || "../assets/Risidio_Logo.jpeg"
+  );
   const formData = new FormData();
   formData.append("file", fs.createReadStream(filePath));
 
@@ -29,6 +32,8 @@ async function uploadFileToIPFS() {
     return `ipfs://${response.data.IpfsHash}`;
   } catch (error) {
     console.error("File upload failed:", error);
+
+    return null;
   }
 }
 
@@ -49,6 +54,7 @@ async function uploadMetadataToIPFS(imageUri) {
     return `ipfs://${response.data.IpfsHash}`;
   } catch (error) {
     console.error("Metadata upload failed:", error);
+    return null;
   }
 }
 
@@ -57,6 +63,8 @@ async function uploadToIPFS() {
   if (imageUri) {
     const metadataUri = await uploadMetadataToIPFS(imageUri);
     console.log("Final metadata URI:", metadataUri);
+  } else {
+    console.error("File upload failed. Metadata upload skipped.");
   }
 }
 
